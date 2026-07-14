@@ -17,26 +17,7 @@ The project follows Infrastructure as Code best practices, including modular des
 
 # 🏗️ Architecture
 
-```
-                    Internet
-                        │
-                Internet Gateway
-                        │
-        ┌───────────────────────────┐
-        │          AWS VPC          │
-        │       10.0.0.0/16         │
-        ├─────────────┬─────────────┤
-        │             │
- Public Subnet    Private Subnet
- 10.0.1.0/24      10.0.2.0/24
-        │
-        │
- Security Group
- (SSH & HTTP)
-        │
-        │
- Amazon EC2
-```
+![AWS Architecture](screenshots/architecture-diagram.png)
 
 ---
 
@@ -146,41 +127,33 @@ terraform destroy
 
 ---
 
-# 📸 Project Screenshots
-
 ## Project Structure
 
-![Project Structure](screenshots/01-project-folder.png)
+![Project Structure](screenshots/project-folder.png)
 
 ## VPC
 
-![VPC](screenshots/02-vpc.png)
+![VPC](screenshots/vpc.png)
 
 ## Subnets
 
-![Subnets](screenshots/03-subnets.png)
+![Subnets](screenshots/subnets.png)
 
 ## Route Table
 
-![Route Table](screenshots/04-route-table.png)
+![Route Table](screenshots/route-table.png)
 
 ## Security Group
 
-![Security Group](screenshots/05-security-group.png)
+![Security Group](screenshots/security-group.png)
 
 ## EC2 Instance
 
-![EC2](screenshots/06-ec2.png)
+![EC2](screenshots/ec2.png)
 
 ## Terraform Plan
 
-![Terraform Plan](screenshots/07-terraform-plan.png)
-
-## Terraform Apply
-
-![Terraform Apply](screenshots/08-terraform-apply.png)
-
----
+![Terraform Plan](screenshots/terraform-plan.png)
 
 # 🎯 Skills Demonstrated
 
@@ -246,11 +219,7 @@ terraform destroy
 
 **Sathya Moorth S**
 
-Aspiring DevOps Engineer
-
-- GitHub: *Add your GitHub profile link here*
-- LinkedIn: *Add your LinkedIn profile link here*
 
 ---
 
-⭐ If you found this project useful, feel free to star the repository.
+⭐ If you found this project useful, feel free to star the repository.s
