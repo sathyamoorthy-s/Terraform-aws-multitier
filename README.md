@@ -204,20 +204,18 @@ terraform destroy
 
 ---
 
-# 📝 Resume Description
+# 📝 # 💼 Resume Highlights
 
 **AWS Multi-Tier Infrastructure Automation using Terraform**
 
-- Automated provisioning of a secure AWS multi-tier infrastructure using Terraform Infrastructure as Code (IaC).
-- Created reusable Terraform modules for VPC, subnets, Internet Gateway, route tables, security groups, and EC2 instances.
-- Implemented Infrastructure as Code best practices using variables, outputs, data sources, and modular project structure.
-- Eliminated manual AWS resource provisioning through automated and repeatable Terraform deployments.
-
----
+- Automated provisioning of AWS infrastructure using Terraform Infrastructure as Code (IaC).
+- Developed reusable Terraform modules for VPC, public/private subnets, Internet Gateway, route tables, security groups, and EC2 instances.
+- Implemented modular, scalable, and reusable infrastructure using variables, outputs, and data sources.
+- Reduced manual infrastructure provisioning by deploying cloud resources through declarative Terraform configuration.
 
 # 👨‍💻 Author
 
-**Sathya Moorth S**
+**Sathya Moorthy S**
 
 
 ---
