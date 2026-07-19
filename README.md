@@ -1,53 +1,57 @@
-# 🚀 AWS Multi-Tier Infrastructure Automation using Terraform
+# AWS Infrastructure Automation with Terraform
 
-![Terraform](https://img.shields.io/badge/Terraform-v1.15+-623CE4?style=for-the-badge&logo=terraform)
-![AWS](https://img.shields.io/badge/AWS-Cloud-FF9900?style=for-the-badge&logo=amazonaws)
-![EC2](https://img.shields.io/badge/EC2-Free_Tier-orange?style=for-the-badge)
-![IaC](https://img.shields.io/badge/Infrastructure-as_Code-blue?style=for-the-badge)
+> **TL;DR:** Modular Terraform project that provisions AWS networking and compute infrastructure using Infrastructure as Code. The configuration creates VPC networking components, security groups, and EC2 resources through reusable Terraform modules, variables, outputs, and an AWS AMI data source.
 
-## 📌 Project Overview
+## Overview
 
-This project demonstrates how to provision a complete AWS multi-tier infrastructure using **Terraform Infrastructure as Code (IaC)**.
+This project provisions AWS infrastructure using Terraform instead of creating each resource manually through the AWS Management Console.
 
-Instead of manually creating resources through the AWS Management Console, the entire infrastructure is deployed using reusable Terraform modules and declarative configuration files.
+The Terraform configuration is organized into reusable modules for VPC networking, security groups, and EC2 resources. Variables are used to pass configuration into the modules, while outputs expose important information about the provisioned infrastructure.
 
-The project follows Infrastructure as Code best practices, including modular design, reusable variables, outputs, state management, and automated provisioning.
+An AWS data source is used to retrieve the required Amazon Machine Image dynamically rather than hardcoding a specific AMI ID.
 
----
+This project automates the same core VPC and EC2 architecture pattern explored manually in a separate project, using Terraform to make the infrastructure repeatable and version-controlled rather than configured by hand through the AWS Management Console.
 
-# 🏗️ Architecture
+The project was built to gain hands-on experience with Infrastructure as Code, Terraform module design, resource dependencies, variables, outputs, data sources, state management, and the Terraform provisioning lifecycle.
+
+## Architecture
 
 ![AWS Architecture](screenshots/architecture-diagram.png)
 
----
+The infrastructure is provisioned through Terraform and includes AWS networking and compute resources.
 
-# ☁️ AWS Services Used
+The provisioning flow is:
 
-- Amazon VPC
-- Public Subnet
-- Private Subnet
-- Internet Gateway
-- Route Table
-- Route Table Association
-- Security Group
-- Amazon EC2
+1. Terraform initializes the AWS provider.
+2. The VPC module creates the required networking resources.
+3. Public and private subnet resources are created within the VPC.
+4. An Internet Gateway and routing configuration provide connectivity for the public network segment.
+5. Security Groups define the required instance-level network access.
+6. An AWS data source retrieves the required Amazon Linux AMI.
+7. The EC2 module provisions the instance using values provided by the root configuration.
+8. Terraform outputs expose selected resource information after provisioning.
 
----
+The infrastructure configuration is defined declaratively in Terraform and can be reviewed with `terraform plan` before resources are created or modified.
 
-# 🛠 Technologies Used
+## Technology Stack
 
-- Terraform
-- AWS
-- EC2
-- VPC
-- Git
-- GitHub
+| Technology | Role in the Project |
+|---|---|
+| Terraform | Infrastructure provisioning and configuration |
+| AWS | Cloud infrastructure platform |
+| Amazon VPC | Provides the network boundary |
+| Subnets | Separate network segments within the VPC |
+| Internet Gateway | Provides internet connectivity for the public network segment |
+| Route Tables | Define network routing behavior |
+| Security Groups | Control instance-level network access |
+| Amazon EC2 | Provides the compute instance |
+| Terraform Data Source | Dynamically retrieves AWS resource information |
+| Git | Version control |
+| GitHub | Source code repository |
 
----
+## Project Structure
 
-# 📂 Project Structure
-
-```
+```text
 terraform-aws-multitier/
 │
 ├── provider.tf
@@ -68,156 +72,275 @@ terraform-aws-multitier/
 └── screenshots/
 ```
 
----
+The Terraform configuration is separated by responsibility:
 
-# ⚙️ Features
+- `provider.tf` — configures the AWS provider.
+- `versions.tf` — defines Terraform and provider version requirements.
+- `variables.tf` — declares input variables used by the root configuration.
+- `terraform.tfvars` — supplies environment-specific variable values and is excluded from version control.
+- `main.tf` — connects and invokes the Terraform modules.
+- `data.tf` — defines data sources used to retrieve existing AWS information.
+- `outputs.tf` — exposes selected infrastructure values after deployment.
+- `modules/vpc/` — contains the VPC and networking configuration.
+- `modules/security-group/` — contains Security Group configuration.
+- `modules/ec2/` — contains EC2 provisioning configuration.
 
-- Modular Terraform project structure
-- Infrastructure as Code (IaC)
-- Automatic VPC provisioning
-- Automatic subnet creation
-- Internet Gateway configuration
-- Route Table configuration
-- Security Group creation
-- EC2 provisioning
-- Latest Amazon Linux AMI fetched using Terraform Data Source
-- Reusable variables
-- Outputs for important resource IDs
-- Easy deployment using Terraform CLI
+## Infrastructure Provisioned
 
----
+The Terraform configuration provisions the infrastructure required by the project, including:
 
-# 📖 Terraform Workflow
+- Custom VPC
+- Public and private subnet resources
+- Internet Gateway
+- Route table configuration
+- Route table associations
+- Security Groups
+- Amazon EC2 instance
 
-Initialize Terraform
+The exact infrastructure configuration is controlled through the Terraform root configuration and module inputs.
 
-```bash
-terraform init
+## Technical Decisions and Considerations
+
+### Modular Terraform Structure
+
+The infrastructure is divided into separate modules for:
+
+```text
+VPC
+Security Groups
+EC2
 ```
 
-Format Terraform files
+This separates networking, security, and compute configuration instead of defining every resource in a single Terraform file.
 
-```bash
-terraform fmt
+The root module connects these components by passing outputs from one module as inputs to another where required.
+
+For example, networking resources must exist before resources that depend on VPC or subnet identifiers can be configured.
+
+This structure was used to gain practical experience with Terraform module composition and resource relationships.
+
+### Variables for Configuration
+
+Input variables are used to avoid hardcoding configurable values throughout the Terraform resources.
+
+Values can be supplied through:
+
+```text
+terraform.tfvars
 ```
 
-Validate configuration
+and passed from the root configuration into the individual modules.
 
-```bash
-terraform validate
-```
+This separates configurable infrastructure values from the underlying resource definitions.
 
-Preview infrastructure
+The `terraform.tfvars` file is excluded from version control through `.gitignore` to avoid committing environment-specific values to the repository.
+
+### Module Inputs and Outputs
+
+Terraform module outputs are used to pass resource information between different parts of the configuration.
+
+For example, a resource created by the VPC module can expose its ID as an output, allowing another module to use that value without duplicating or hardcoding the resource identifier.
+
+This demonstrates how independently organized Terraform modules can be connected through explicit inputs and outputs.
+
+### Dynamic AMI Selection
+
+The project uses a Terraform data source to retrieve the required Amazon Linux AMI instead of hardcoding a specific AMI ID.
+
+This avoids tying the configuration to a manually copied AMI identifier and demonstrates how Terraform can query existing AWS information during planning.
+
+The selected AMI should still be reviewed when applying the configuration because dynamically selected images can change over time depending on the data source filters.
+
+### Declarative Infrastructure Management
+
+The AWS resources are defined through Terraform configuration rather than being created individually through the AWS Management Console.
+
+The intended infrastructure changes can be reviewed before deployment using:
 
 ```bash
 terraform plan
 ```
 
-Deploy infrastructure
+Terraform compares the declared configuration with the infrastructure recorded in its state and determines the actions required to reach the desired configuration.
+
+### Resource Dependencies
+
+Dependencies between infrastructure components are expressed through Terraform resource references and module inputs.
+
+For example, resources that require a VPC, subnet, or Security Group reference use values produced by the corresponding resources or modules.
+
+This allows Terraform to determine the dependency order required during provisioning instead of relying on a manually defined resource creation sequence.
+
+### Local State Management
+
+This project currently uses local Terraform state.
+
+The local state files are excluded from version control through `.gitignore` and remain on the machine where Terraform is executed.
+
+Local state is sufficient for the scope of this single-person learning project, but it would not be appropriate for a collaborative environment where multiple engineers need to manage the same infrastructure.
+
+For a shared environment, a remote backend such as Amazon S3 could provide centralized state storage together with an appropriate state-locking mechanism to prevent conflicting concurrent Terraform operations.
+
+## Terraform Workflow
+
+### 1. Initialize
+
+Initialize the working directory and download the required provider plugins:
+
+```bash
+terraform init
+```
+
+### 2. Format
+
+Format the Terraform configuration:
+
+```bash
+terraform fmt -recursive
+```
+
+### 3. Validate
+
+Check the configuration for syntax and internal consistency:
+
+```bash
+terraform validate
+```
+
+Expected successful validation:
+
+```text
+Success! The configuration is valid.
+```
+
+### 4. Review the Plan
+
+Preview the infrastructure changes:
+
+```bash
+terraform plan
+```
+
+The execution plan should be reviewed before applying changes to understand which resources Terraform intends to create, modify, or destroy.
+
+### 5. Provision the Infrastructure
+
+Apply the configuration:
 
 ```bash
 terraform apply
 ```
 
-Destroy infrastructure
+Review the proposed changes and confirm the apply when ready.
+
+### 6. Review Outputs
+
+After provisioning, view the configured Terraform outputs:
+
+```bash
+terraform output
+```
+
+Outputs provide selected information about resources created by the configuration.
+
+### 7. Destroy the Infrastructure
+
+When the environment is no longer required:
 
 ```bash
 terraform destroy
 ```
 
----
+Review the destruction plan before confirming removal of the Terraform-managed resources.
 
-## Project Structure
+## Verification
 
-![Project Structure](screenshots/project-folder.png)
+The Terraform configuration was verified through the standard Terraform workflow.
 
-## VPC
+Configuration validation:
 
-![VPC](screenshots/vpc.png)
+```bash
+terraform validate
+```
 
-## Subnets
+Infrastructure change preview:
 
-![Subnets](screenshots/subnets.png)
+```bash
+terraform plan
+```
 
-## Route Table
+Provisioning:
 
-![Route Table](screenshots/route-table.png)
+```bash
+terraform apply
+```
 
-## Security Group
+Configured outputs:
 
-![Security Group](screenshots/security-group.png)
+```bash
+terraform output
+```
 
-## EC2 Instance
+The AWS Management Console was also used to verify that the expected VPC, subnet, routing, Security Group, and EC2 resources were created after the Terraform apply completed.
 
-![EC2](screenshots/ec2.png)
+The following were verified during the project:
 
-## Terraform Plan
+- Terraform configuration passed `terraform validate`.
+- Terraform generated an execution plan before deployment.
+- AWS resources were provisioned through `terraform apply`.
+- VPC networking resources were created successfully.
+- Security Group resources were created successfully.
+- EC2 resources were provisioned successfully.
+- Terraform outputs returned the configured resource information.
+
+## Selected Project Evidence
+
+The following screenshots highlight the main Terraform and AWS provisioning results.
+
+### Terraform Execution Plan
 
 ![Terraform Plan](screenshots/terraform-plan.png)
 
-# 🎯 Skills Demonstrated
+Shows the Terraform execution plan used to review proposed infrastructure changes before provisioning.
 
-- Infrastructure as Code (IaC)
-- AWS Networking
-- Terraform Modules
-- Terraform Variables
-- Terraform Outputs
-- Terraform Data Sources
-- State Management
-- Resource Dependencies
-- EC2 Deployment
-- Security Group Configuration
-- Git Version Control
+### Terraform Apply
 
----
+![Terraform Apply](screenshots/terraform-apply.png)
 
-# 📚 Key Terraform Concepts Learned
+Shows successful infrastructure provisioning through the Terraform apply workflow.
 
-- Providers
-- Resources
-- Variables
-- Outputs
-- Modules
-- Module Inputs & Outputs
-- Data Sources
-- Resource References
-- State File
-- terraform init
-- terraform validate
-- terraform fmt
-- terraform plan
-- terraform apply
-- terraform destroy
+### VPC
 
----
+![VPC](screenshots/vpc.png)
 
-# 🚀 Future Improvements
+Shows the VPC provisioned through the Terraform configuration.
 
-- Remote Backend (S3)
-- DynamoDB State Locking
-- Auto Scaling Group
-- Application Load Balancer
-- NAT Gateway
-- RDS Database
-- CI/CD Deployment using GitHub Actions
-- Kubernetes Deployment
+### Security Group
 
----
+![Security Group](screenshots/security-group.png)
 
-# 📝 # 💼 Resume Highlights
+Shows the Security Group provisioned for instance-level network access.
 
-**AWS Multi-Tier Infrastructure Automation using Terraform**
+### EC2 Instance
 
-- Automated provisioning of AWS infrastructure using Terraform Infrastructure as Code (IaC).
-- Developed reusable Terraform modules for VPC, public/private subnets, Internet Gateway, route tables, security groups, and EC2 instances.
-- Implemented modular, scalable, and reusable infrastructure using variables, outputs, and data sources.
-- Reduced manual infrastructure provisioning by deploying cloud resources through declarative Terraform configuration.
+![EC2](screenshots/ec2.png)
 
-# 👨‍💻 Author
+Shows the EC2 instance provisioned through the Terraform EC2 module.
 
-**Sathya Moorthy S**
+Additional screenshots, including the project structure, subnet resources, and route table configuration, are retained in the `screenshots/` directory as supporting project evidence.
 
+## Limitations and Next Steps
 
----
+The project focuses on Terraform fundamentals, modular infrastructure design, and automated AWS resource provisioning.
 
-⭐ If you found this project useful, feel free to star the repository.s
+Current limitations and relevant next steps include:
+
+- **State management:** This project currently uses local Terraform state, which is appropriate for a single-person learning environment but does not scale well to collaborative infrastructure management. A remote backend such as Amazon S3 could provide centralized state storage, together with an appropriate state-locking mechanism for concurrent-safe operations in a shared environment.
+
+- **Private subnet connectivity:** A NAT Gateway could be added if workloads in private subnets require outbound internet access while remaining inaccessible to direct inbound internet connections.
+
+- **Workload architecture:** The current project focuses on core networking and EC2 provisioning. Load balancing and Auto Scaling could be added if the infrastructure is extended to host a highly available application workload.
+
+- **Environment separation:** Separate Terraform configurations, variable files, or another environment-management strategy could be introduced if the project is expanded to manage environments such as development, staging, and production.
+
+These improvements are intentionally kept outside the current scope so that the project remains focused on understanding Terraform modules, dependencies, local state, data sources, and the infrastructure provisioning lifecycle.
