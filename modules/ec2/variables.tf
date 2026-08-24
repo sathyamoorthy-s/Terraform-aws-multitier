@@ -21,3 +21,8 @@ variable "key_name" {
 variable "instance_name" {
   type = string
 }
+
+variable "associate_public_ip" {
+  type    = bool
+  default = true
+}

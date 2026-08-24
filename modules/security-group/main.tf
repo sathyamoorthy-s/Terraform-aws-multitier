@@ -13,7 +13,7 @@ resource "aws_security_group" "main" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
+  ingress { 
     description = "HTTP"
 
     from_port   = 80
